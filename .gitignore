@@ -1,0 +1,7 @@
+/target
+/build
+/dist
+**/*.rs.bk
+/.eggs
+/venv
+/*.egg-info
