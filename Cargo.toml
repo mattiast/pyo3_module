@@ -8,6 +8,7 @@ edition = "2018"
 pyo3 = { version = "0.9.1", features = ["extension-module"]}
 numpy = "0.8.0"
 ndarray = "0.13.0"
+rand = "0.7.3"
 
 [lib]
 name = "sample_module"

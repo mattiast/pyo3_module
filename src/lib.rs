@@ -2,6 +2,7 @@ use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
 use numpy::{IntoPyArray, PyArrayDyn};
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
+use rand::{thread_rng, Rng};
 
 #[pyfunction]
 /// add 5 to a nonnegative integer
@@ -20,6 +21,31 @@ pub fn cumsum_inplace(x: &PyArrayDyn<f64>) -> PyResult<()> {
     }
 
     Ok(())
+}
+
+fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
+    let mut s = 0.0;
+    let mut n = 0;
+
+    while s < x {
+        n += 1;
+        s += rng.gen::<f64>();
+    }
+    n
+}
+
+#[pyfunction]
+/// Random coffee machine gives U(0,1) cups of coffee, how many times we need
+/// to press the button?
+pub fn ev_presses(x: f64, n_sims: usize) -> PyResult<f64> {
+    let mut rng = thread_rng();
+    let mut s = 0.0;
+
+    for _ in 0..n_sims {
+        s += draw_presses(x, &mut rng) as f64;
+    }
+
+    Ok(s / n_sims as f64)
 }
 
 #[pyclass]
@@ -46,6 +72,7 @@ impl Juttu {
 fn sample_module(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(add5))?;
     m.add_wrapped(wrap_pyfunction!(cumsum_inplace))?;
+    m.add_wrapped(wrap_pyfunction!(ev_presses))?;
     m.add_class::<Juttu>()?;
 
     Ok(())
