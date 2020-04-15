@@ -3,6 +3,7 @@ use numpy::{IntoPyArray, PyArrayDyn};
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use rand::{thread_rng, Rng};
+use rayon::prelude::*;
 
 #[pyfunction]
 /// add 5 to a nonnegative integer
@@ -37,15 +38,22 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 #[pyfunction]
 /// Random coffee machine gives U(0,1) cups of coffee, how many times we need
 /// to press the button?
-pub fn ev_presses(x: f64, n_sims: usize) -> PyResult<f64> {
-    let mut rng = thread_rng();
-    let mut s = 0.0;
+pub fn ev_presses(x: f64, n_sims: usize, n_threads: usize) -> PyResult<f64> {
+    let sims_per_thread = n_sims / n_threads;
+    let total: f64 = (0..n_threads)
+        .into_par_iter()
+        .map(|_| {
+            let mut rng = thread_rng();
+            let mut s = 0.0;
 
-    for _ in 0..n_sims {
-        s += draw_presses(x, &mut rng) as f64;
-    }
+            for _ in 0..sims_per_thread {
+                s += draw_presses(x, &mut rng) as f64;
+            }
+            s
+        })
+        .sum();
 
-    Ok(s / n_sims as f64)
+    Ok(total / n_sims as f64)
 }
 
 #[pyclass]
