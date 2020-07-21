@@ -1,5 +1,4 @@
-use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
-use numpy::{IntoPyArray, PyArrayDyn};
+use numpy::PyArray1;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use rand::{thread_rng, Rng};
@@ -12,8 +11,8 @@ pub fn add5(x: u32) -> PyResult<u32> {
 }
 
 #[pyfunction]
-pub fn cumsum_inplace(x: &PyArrayDyn<f64>) -> PyResult<()> {
-    let mut x = x.as_array_mut();
+pub fn cumsum_inplace(x: &PyArray1<f64>) -> PyResult<()> {
+    let mut x = unsafe { x.as_array_mut() };
 
     let mut s: f64 = 0.0;
     for xi in x.iter_mut() {
@@ -73,11 +72,15 @@ impl Juttu {
     fn xsq(&self) -> PyResult<i32> {
         Ok(self.x * self.x)
     }
+
+    fn is_juttu(&self) -> bool {
+        self.y
+    }
 }
 
 /// This module is a python module implemented in Rust.
 #[pymodule]
-fn sample_module(py: Python, m: &PyModule) -> PyResult<()> {
+fn sample_module(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(add5))?;
     m.add_wrapped(wrap_pyfunction!(cumsum_inplace))?;
     m.add_wrapped(wrap_pyfunction!(ev_presses))?;
