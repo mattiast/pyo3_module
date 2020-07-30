@@ -59,6 +59,7 @@ pub fn ev_presses(x: f64, n_sims: usize, n_threads: usize) -> PyResult<f64> {
 
 #[pyclass]
 struct Juttu {
+    #[pyo3(get)]
     x: i32,
     y: bool,
 }
@@ -75,6 +76,7 @@ impl Juttu {
         Ok(self.x * self.x)
     }
 
+    #[getter]
     fn is_juttu(&self) -> bool {
         self.y
     }
