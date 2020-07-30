@@ -1,5 +1,6 @@
 use ndarray::ArrayViewMut1;
 use numpy::PyArray1;
+use pyo3::class::basic::PyObjectProtocol;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use rand::{thread_rng, Rng};
@@ -79,6 +80,13 @@ impl Juttu {
     #[getter]
     fn is_juttu(&self) -> bool {
         self.y
+    }
+}
+
+#[pyproto]
+impl PyObjectProtocol for Juttu {
+    fn __repr__(&self) -> String {
+        format!("Juttu({},{})", self.x, self.y)
     }
 }
 
