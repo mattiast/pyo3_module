@@ -1,3 +1,4 @@
+use ndarray::ArrayViewMut1;
 use numpy::PyArray1;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
@@ -10,17 +11,18 @@ pub fn add5(x: u32) -> PyResult<u32> {
     Ok(x + 5)
 }
 
-#[pyfunction]
-pub fn cumsum_inplace(x: &PyArray1<f64>) -> PyResult<()> {
-    let mut x = unsafe { x.as_array_mut() };
-
+fn my_cumsum(x: &mut ArrayViewMut1<f64>) {
     let mut s: f64 = 0.0;
     for xi in x.iter_mut() {
         s += *xi;
         *xi = s;
     }
+}
 
-    Ok(())
+#[pyfunction]
+pub fn cumsum_inplace(x: &PyArray1<f64>) {
+    let mut x: ArrayViewMut1<f64> = unsafe { x.as_array_mut() };
+    my_cumsum(&mut x);
 }
 
 fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
