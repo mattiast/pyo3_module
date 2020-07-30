@@ -1,2 +1,2 @@
 wheel:
-	venv/bin/python setup.py bdist_wheel
+	maturin build --release --strip -i python3.8
