@@ -7,6 +7,7 @@ use rand::{thread_rng, Rng};
 use rayon::prelude::*;
 
 #[pyfunction]
+#[text_signature = "(x)"]
 /// add 5 to a nonnegative integer
 pub fn add5(x: u32) -> PyResult<u32> {
     Ok(x + 5)
@@ -21,6 +22,8 @@ fn my_cumsum(x: &mut ArrayViewMut1<f64>) {
 }
 
 #[pyfunction]
+#[text_signature = "(x)"]
+/// Replace values in an array by cumulative sum, in place
 pub fn cumsum_inplace(x: &PyArray1<f64>) {
     let mut x: ArrayViewMut1<f64> = unsafe { x.as_array_mut() };
     my_cumsum(&mut x);
@@ -40,6 +43,7 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 /// Random coffee machine gives U(0,1) cups of coffee, how many times we need
 /// to press the button?
 #[pyfunction]
+#[text_signature = "(x, n_sims)"]
 pub fn ev_presses(x: f64, n_sims: usize) -> PyResult<f64> {
     let total: f64 = (0..n_sims)
         .into_par_iter()
@@ -53,6 +57,8 @@ pub fn ev_presses(x: f64, n_sims: usize) -> PyResult<f64> {
 }
 
 #[pyclass]
+#[text_signature = "(x, y)"]
+/// Class representing a thing
 struct Juttu {
     #[pyo3(get)]
     x: i32,
@@ -66,11 +72,14 @@ impl Juttu {
         Juttu { x, y }
     }
 
+    #[text_signature = "($self)"]
+    /// Get square of x
     fn xsq(&self) -> PyResult<i32> {
         Ok(self.x * self.x)
     }
 
     #[getter]
+    /// Tells whether y is true or not
     fn is_juttu(&self) -> bool {
         self.y
     }
