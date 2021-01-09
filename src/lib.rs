@@ -1,3 +1,4 @@
+use eyre::{eyre, Result};
 use ndarray::ArrayViewMut1;
 use numpy::PyArray1;
 use pyo3::class::basic::PyObjectProtocol;
@@ -9,8 +10,12 @@ use rayon::prelude::*;
 #[pyfunction]
 #[text_signature = "(x)"]
 /// add 5 to a nonnegative integer
-pub fn add5(x: u32) -> PyResult<u32> {
-    Ok(x + 5)
+pub fn add5(x: u32) -> Result<u32> {
+    if x > 3 {
+        Ok(x + 5)
+    } else {
+        Err(eyre!("Too low number"))
+    }
 }
 
 fn my_cumsum(x: &mut ArrayViewMut1<f64>) {
@@ -44,7 +49,7 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 /// to press the button?
 #[pyfunction]
 #[text_signature = "(x, n_sims)"]
-pub fn ev_presses(x: f64, n_sims: usize) -> PyResult<f64> {
+pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
     let total: f64 = (0..n_sims)
         .into_par_iter()
         .map(|_| {
@@ -53,7 +58,7 @@ pub fn ev_presses(x: f64, n_sims: usize) -> PyResult<f64> {
         })
         .sum();
 
-    Ok(total / n_sims as f64)
+    total / n_sims as f64
 }
 
 #[pyclass]
@@ -74,8 +79,8 @@ impl Juttu {
 
     #[text_signature = "($self)"]
     /// Get square of x
-    fn xsq(&self) -> PyResult<i32> {
-        Ok(self.x * self.x)
+    fn xsq(&self) -> i32 {
+        self.x * self.x
     }
 
     #[getter]

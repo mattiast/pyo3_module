@@ -5,11 +5,12 @@ authors = ["Matti Astrand <mattiastr@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-pyo3 = { version = "0.12", features = ["extension-module"]}
-numpy = "0.12"
+pyo3 = { version = "0.13", features = ["extension-module"]}
+numpy = "0.13"
 ndarray = "0.14"
 rand = "0.7"
 rayon = "1.5"
+eyre = { version = "0.6.5", features = ["pyo3"]}
 
 [lib]
 name = "sample_module"
