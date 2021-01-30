@@ -1,9 +1,9 @@
 use eyre::{eyre, Result};
 use ndarray::ArrayViewMut1;
 use numpy::PyArray1;
-use pyo3::class::basic::PyObjectProtocol;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
+use pyo3::{class::basic::PyObjectProtocol, wrap_pymodule};
 use rand::{thread_rng, Rng};
 use rayon::prelude::*;
 
@@ -97,6 +97,20 @@ impl PyObjectProtocol for Juttu {
     }
 }
 
+#[pyfunction]
+#[text_signature = "(x)"]
+fn add6(x: u32) -> u32 {
+    x + 6
+}
+
+/// This is a submodule
+#[pymodule]
+fn subi(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_wrapped(wrap_pyfunction!(add6))?;
+
+    Ok(())
+}
+
 /// This module is a python module implemented in Rust.
 #[pymodule]
 fn sample_module(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -104,6 +118,8 @@ fn sample_module(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(cumsum_inplace))?;
     m.add_wrapped(wrap_pyfunction!(ev_presses))?;
     m.add_class::<Juttu>()?;
+
+    m.add_wrapped(wrap_pymodule!(subi))?;
 
     Ok(())
 }
