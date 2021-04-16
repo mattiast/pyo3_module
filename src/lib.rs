@@ -4,7 +4,10 @@ use numpy::PyArray1;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use pyo3::{class::basic::PyObjectProtocol, wrap_pymodule};
-use rand::{thread_rng, Rng};
+use rand::Rng;
+
+use rand_core::SeedableRng;
+use rand_pcg::Pcg64;
 use rayon::prelude::*;
 
 #[pyfunction]
@@ -50,10 +53,13 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 #[pyfunction]
 #[text_signature = "(x, n_sims)"]
 pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
-    let total: f64 = (0..n_sims)
+    let mut rng = Pcg64::seed_from_u64(5);
+
+    let seeds: Vec<<Pcg64 as SeedableRng>::Seed> = (0..n_sims).map(|_| rng.gen()).collect();
+    let total: f64 = seeds
         .into_par_iter()
-        .map(|_| {
-            let mut rng = thread_rng();
+        .map(|seed| {
+            let mut rng = Pcg64::from_seed(seed);
             draw_presses(x, &mut rng) as f64
         })
         .sum();
