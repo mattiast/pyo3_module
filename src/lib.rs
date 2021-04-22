@@ -129,3 +129,13 @@ fn sample_module(_py: Python, m: &PyModule) -> PyResult<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::add6;
+
+    #[test]
+    fn test_foo() {
+        assert_eq!(add6(4), 10);
+    }
+}

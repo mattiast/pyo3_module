@@ -5,7 +5,7 @@ authors = ["Matti Astrand <mattiastr@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-pyo3 = { version = "0.13", features = ["extension-module"]}
+pyo3 = "0.13"
 numpy = "0.13"
 ndarray = "0.14"
 rand = "*"
@@ -17,3 +17,6 @@ eyre = { version = "0.6.5", features = ["pyo3"]}
 [lib]
 name = "sample_module"
 crate-type = ["cdylib"]
+
+[features]
+default = ["pyo3/extension-module"]
