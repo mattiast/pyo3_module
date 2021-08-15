@@ -19,6 +19,10 @@ def test_add5():
         sample_module.add5(3)
 
 
+def test_add6():
+    assert sample_module.subi.kuus(4) == 10
+
+
 def test_cumsum():
     x = np.ones(5)
     sample_module.cumsum_inplace(x)

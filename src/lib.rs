@@ -1,23 +1,31 @@
-use eyre::{eyre, Result};
 use ndarray::ArrayViewMut1;
 use numpy::PyArray1;
 use pyo3::prelude::*;
-use pyo3::wrap_pyfunction;
 use pyo3::{class::basic::PyObjectProtocol, wrap_pymodule};
 use rand::Rng;
-
 use rand_core::SeedableRng;
 use rand_pcg::Pcg64;
 use rayon::prelude::*;
 
+#[derive(Debug)]
+pub enum MyError {
+    TooLow,
+}
+
+impl From<MyError> for pyo3::PyErr {
+    fn from(error: MyError) -> Self {
+        pyo3::exceptions::PyRuntimeError::new_err(format!("{:?}", error))
+    }
+}
+
 #[pyfunction]
-#[text_signature = "(x)"]
+#[pyo3(text_signature = "(x)")]
 /// add 5 to a nonnegative integer
-pub fn add5(x: u32) -> Result<u32> {
+pub fn add5(x: u32) -> Result<u32, MyError> {
     if x > 3 {
         Ok(x + 5)
     } else {
-        Err(eyre!("Too low number"))
+        Err(MyError::TooLow)
     }
 }
 
@@ -30,7 +38,7 @@ fn my_cumsum(x: &mut ArrayViewMut1<f64>) {
 }
 
 #[pyfunction]
-#[text_signature = "(x)"]
+#[pyo3(text_signature = "(x)")]
 /// Replace values in an array by cumulative sum, in place
 pub fn cumsum_inplace(x: &PyArray1<f64>) {
     let mut x: ArrayViewMut1<f64> = unsafe { x.as_array_mut() };
@@ -51,7 +59,7 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 /// Random coffee machine gives U(0,1) cups of coffee, how many times we need
 /// to press the button?
 #[pyfunction]
-#[text_signature = "(x, n_sims)"]
+#[pyo3(text_signature = "(x, n_sims)")]
 pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
     let mut rng = Pcg64::seed_from_u64(5);
 
@@ -68,7 +76,7 @@ pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
 }
 
 #[pyclass]
-#[text_signature = "(x, y)"]
+#[pyo3(text_signature = "(x, y)")]
 /// Class representing a thing
 struct Juttu {
     #[pyo3(get)]
@@ -83,7 +91,7 @@ impl Juttu {
         Juttu { x, y }
     }
 
-    #[text_signature = "($self)"]
+    #[pyo3(text_signature = "($self)")]
     /// Get square of x
     fn xsq(&self) -> i32 {
         self.x * self.x
@@ -104,7 +112,7 @@ impl PyObjectProtocol for Juttu {
 }
 
 #[pyfunction]
-#[text_signature = "(x)"]
+#[pyo3(text_signature = "(x)", name = "kuus")]
 fn add6(x: u32) -> u32 {
     x + 6
 }
