@@ -7,7 +7,9 @@ tasks:
       cargo build --release
       python -m venv .venv
       source .venv/bin/activate
-    command: cargo watch -x run
+      pip install pytest numpy maturin
+      maturin develop --release
+    command: pytest
 vscode:
   extensions:
     - matklad.rust-analyzer
