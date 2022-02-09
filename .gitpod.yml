@@ -9,8 +9,9 @@ tasks:
       source .venv/bin/activate
       pip install pytest numpy maturin
       maturin develop --release
-    command: pytest
+    command: source .venv/bin/activate
 vscode:
   extensions:
     - matklad.rust-analyzer
+    - vadimcn.vscode-lldb
 
