@@ -41,8 +41,8 @@ fn my_cumsum(x: &mut ArrayViewMut1<f64>) {
 #[pyo3(text_signature = "(x)")]
 /// Replace values in an array by cumulative sum, in place
 pub fn cumsum_inplace(x: &PyArray1<f64>) {
-    let mut x: ArrayViewMut1<f64> = unsafe { x.as_array_mut() };
-    my_cumsum(&mut x);
+    let mut y: ArrayViewMut1<f64> = unsafe { x.as_array_mut() };
+    my_cumsum(&mut y);
 }
 
 fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
