@@ -16,4 +16,5 @@ vscode:
   extensions:
     - rust-lang.rust-analyzer
     - vadimcn.vscode-lldb
+    - ms-python.python
 

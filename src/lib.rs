@@ -3,7 +3,6 @@ use numpy::PyArray1;
 use pyo3::prelude::*;
 use pyo3::wrap_pymodule;
 use rand::Rng;
-use rand_core::SeedableRng;
 use rand_pcg::Pcg64;
 use rayon::prelude::*;
 
@@ -61,15 +60,18 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 #[pyfunction]
 #[pyo3(text_signature = "(x, n_sims)")]
 pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
-    let mut rng = Pcg64::seed_from_u64(5);
+    let seed = 5;
 
-    let seeds: Vec<<Pcg64 as SeedableRng>::Seed> = (0..n_sims).map(|_| rng.gen()).collect();
-    let total: f64 = seeds
+    let total: f64 = (0..n_sims)
         .into_par_iter()
-        .map(|seed| {
-            let mut rng = Pcg64::from_seed(seed);
-            draw_presses(x, &mut rng) as f64
-        })
+        .fold(
+            || 0.0,
+            |acc, i| {
+                let mut rng: Pcg64 = rand_seeder::Seeder::from((seed, i)).make_rng();
+                let result = draw_presses(x, &mut rng) as f64;
+                acc + result
+            },
+        )
         .sum();
 
     total / n_sims as f64

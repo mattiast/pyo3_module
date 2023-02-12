@@ -11,6 +11,7 @@ ndarray = "0.15"
 rand = "*"
 rand_core = "*"
 rand_pcg = "*"
+rand_seeder = "*"
 rayon = "1.6"
 thiserror = "*"
 
