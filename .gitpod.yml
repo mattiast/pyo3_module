@@ -5,6 +5,8 @@
 tasks:
   - init: |
       cargo build --release
+      pyenv install 3.10.9
+      pyenv shell 3.10.9
       python -m venv .venv
       source .venv/bin/activate
       pip install pytest numpy maturin
@@ -12,6 +14,6 @@ tasks:
     command: source .venv/bin/activate
 vscode:
   extensions:
-    - matklad.rust-analyzer
+    - rust-lang.rust-analyzer
     - vadimcn.vscode-lldb
 

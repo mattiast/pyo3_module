@@ -5,13 +5,13 @@ authors = ["Matti Astrand <mattiastr@gmail.com>"]
 edition = "2021"
 
 [dependencies]
-pyo3 = "0.16"
-numpy = "0.16"
+pyo3 = "0.18"
+numpy = "0.18"
 ndarray = "0.15"
 rand = "*"
 rand_core = "*"
 rand_pcg = "*"
-rayon = "1.5"
+rayon = "1.6"
 thiserror = "*"
 
 [lib]
