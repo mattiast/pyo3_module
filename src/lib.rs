@@ -64,8 +64,8 @@ pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
 
     let total: f64 = (0..n_sims)
         .into_par_iter()
-        .fold(
-            || 0.0,
+        .fold_with(
+            0.0,
             |acc, i| {
                 let mut rng: Pcg64 = rand_seeder::Seeder::from((seed, i)).make_rng();
                 let result = draw_presses(x, &mut rng) as f64;
@@ -139,10 +139,16 @@ fn sample_module(_py: Python, m: &PyModule) -> PyResult<()> {
 
 #[cfg(test)]
 mod tests {
-    use crate::add6;
+    use crate::{add6, ev_presses};
 
     #[test]
     fn test_foo() {
         assert_eq!(add6(4), 10);
+    }
+
+    #[test]
+    fn test_ev() {
+        let x = ev_presses(1.5, 400);
+        assert!(x > 0.0);
     }
 }
