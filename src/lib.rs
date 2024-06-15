@@ -1,7 +1,7 @@
 use ndarray::ArrayViewMut1;
-use numpy::PyArray1;
+use numpy::{PyArray1, PyArrayMethods};
 use pyo3::prelude::*;
-use pyo3::wrap_pyfunction;
+use pyo3::{wrap_pyfunction, wrap_pymodule};
 use rand::Rng;
 use rand_pcg::Pcg64;
 use rayon::prelude::*;
@@ -18,7 +18,6 @@ impl From<MyError> for pyo3::PyErr {
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(x)")]
 /// add 5 to a nonnegative integer
 pub fn add5(x: u32) -> Result<u32, MyError> {
     if x > 3 {
@@ -37,9 +36,8 @@ fn my_cumsum(x: &mut ArrayViewMut1<f64>) {
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(x)")]
 /// Replace values in an array by cumulative sum, in place
-pub fn cumsum_inplace(x: &PyArray1<f64>) {
+pub fn cumsum_inplace(x: &Bound<PyArray1<f64>>) {
     let mut y: ArrayViewMut1<f64> = unsafe { x.as_array_mut() };
     my_cumsum(&mut y);
 }
@@ -58,7 +56,6 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 /// Random coffee machine gives U(0,1) cups of coffee, how many times we need
 /// to press the button?
 #[pyfunction]
-#[pyo3(text_signature = "(x, n_sims)")]
 pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
     let seed = 5;
 
@@ -78,7 +75,6 @@ pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
 }
 
 #[pyclass]
-#[pyo3(text_signature = "(x, y)")]
 /// Class representing a thing
 struct Juttu {
     #[pyo3(get)]
@@ -93,7 +89,6 @@ impl Juttu {
         Juttu { x, y }
     }
 
-    #[pyo3(text_signature = "($self)")]
     /// Get square of x
     fn xsq(&self) -> i32 {
         self.x * self.x
@@ -111,14 +106,14 @@ impl Juttu {
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(x)", name = "kuus")]
+#[pyo3(name = "kuus")]
 fn add6(x: u32) -> u32 {
     x + 6
 }
 
 /// This is a submodule
 #[pymodule]
-fn subi(_py: Python, m: &PyModule) -> PyResult<()> {
+fn subi(m: &Bound<PyModule>) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(add6))?;
 
     Ok(())
@@ -126,7 +121,7 @@ fn subi(_py: Python, m: &PyModule) -> PyResult<()> {
 
 /// This module is a python module implemented in Rust.
 #[pymodule]
-fn sample_module(_py: Python, m: &PyModule) -> PyResult<()> {
+fn sample_module(m: &Bound<PyModule>) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(add5))?;
     m.add_wrapped(wrap_pyfunction!(cumsum_inplace))?;
     m.add_wrapped(wrap_pyfunction!(ev_presses))?;
