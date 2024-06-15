@@ -1,7 +1,7 @@
 use ndarray::ArrayViewMut1;
 use numpy::PyArray1;
 use pyo3::prelude::*;
-use pyo3::wrap_pymodule;
+use pyo3::wrap_pyfunction;
 use rand::Rng;
 use rand_pcg::Pcg64;
 use rayon::prelude::*;
