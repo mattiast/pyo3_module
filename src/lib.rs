@@ -48,7 +48,7 @@ fn draw_presses<R: Rng>(x: f64, rng: &mut R) -> usize {
 
     while s < x {
         n += 1;
-        s += rng.gen::<f64>();
+        s += rng.random::<f64>();
     }
     n
 }
@@ -61,14 +61,11 @@ pub fn ev_presses(x: f64, n_sims: usize) -> f64 {
 
     let total: f64 = (0..n_sims)
         .into_par_iter()
-        .fold_with(
-            0.0,
-            |acc, i| {
-                let mut rng: Pcg64 = rand_seeder::Seeder::from((seed, i)).make_rng();
-                let result = draw_presses(x, &mut rng) as f64;
-                acc + result
-            },
-        )
+        .fold_with(0.0, |acc, i| {
+            let mut rng: Pcg64 = rand_seeder::Seeder::from((seed, i)).into_rng();
+            let result = draw_presses(x, &mut rng) as f64;
+            acc + result
+        })
         .sum();
 
     total / n_sims as f64
