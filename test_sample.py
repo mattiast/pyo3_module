@@ -11,6 +11,7 @@ def test_sq():
 def test_juttu():
     j = sample_module.Juttu(123, False)
     assert "123" in repr(j)
+    assert not j.is_juttu
 
 
 def test_add5():
