@@ -1,7 +1,7 @@
 use ndarray::ArrayViewMut1;
 use numpy::{PyArray1, PyArrayMethods};
 use pyo3::prelude::*;
-use pyo3::{wrap_pyfunction, wrap_pymodule};
+use pyo3::wrap_pyfunction;
 use rand::Rng;
 use rand_pcg::Pcg64;
 use rayon::prelude::*;
@@ -108,23 +108,17 @@ fn add6(x: u32) -> u32 {
     x + 6
 }
 
-/// This is a submodule
-#[pymodule]
-fn subi(m: &Bound<PyModule>) -> PyResult<()> {
-    m.add_wrapped(wrap_pyfunction!(add6))?;
-
-    Ok(())
-}
-
 /// This module is a python module implemented in Rust.
 #[pymodule]
-fn sample_module(m: &Bound<PyModule>) -> PyResult<()> {
-    m.add_wrapped(wrap_pyfunction!(add5))?;
-    m.add_wrapped(wrap_pyfunction!(cumsum_inplace))?;
-    m.add_wrapped(wrap_pyfunction!(ev_presses))?;
+fn sample_module(py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(add5, m)?)?;
+    m.add_function(wrap_pyfunction!(cumsum_inplace, m)?)?;
+    m.add_function(wrap_pyfunction!(ev_presses, m)?)?;
     m.add_class::<Juttu>()?;
 
-    m.add_wrapped(wrap_pymodule!(subi))?;
+    let subi = PyModule::new(py, "subi")?;
+    subi.add_function(wrap_pyfunction!(add6, &subi)?)?;
+    m.add_submodule(&subi)?;
 
     Ok(())
 }
