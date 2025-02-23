@@ -8,7 +8,7 @@ edition = "2024"
 pyo3 = "0.23"
 numpy = "0.23"
 ndarray = "0.16"
-rand = "0.9"
+rand = { version = "0.9", default-features = false }
 rand_core = "0.9"
 rand_pcg = "0.9"
 rand_seeder = "0.4"
