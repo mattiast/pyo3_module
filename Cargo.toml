@@ -5,8 +5,8 @@ authors = ["Matti Astrand <mattiastr@gmail.com>"]
 edition = "2024"
 
 [dependencies]
-pyo3 = "0.25"
-numpy = "0.25"
+pyo3 = "0.27"
+numpy = "0.27"
 ndarray = "0.16"
 rand = { version = "0.9", default-features = false }
 rand_core = "0.9"
